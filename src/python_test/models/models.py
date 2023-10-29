@@ -1,16 +1,11 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+import asyncio
 
-from .external_requests import GetWeatherRequest
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.orm import declarative_base, relationship
+
+from python_test.services.external_requests import GetWeatherRequest
 
 
-# Создание сессии
-SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
-engine = create_engine(SQLALCHEMY_DATABASE_URI)
-Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Подключение базы (с автоматической генерацией моделей)
 Base = declarative_base()
 
 
@@ -24,12 +19,12 @@ class City(Base):
     name = Column(String, unique=True, nullable=False)
 
     @property
-    def weather(self) -> str:
+    async def weather(self) -> float:
         """
         Возвращает текущую погоду в этом городе
         """
         r = GetWeatherRequest()
-        weather = r.get_weather(self.name)
+        weather = await r.get_weather(str(self.name))
         return weather
 
     def __repr__(self):
@@ -80,6 +75,3 @@ class PicnicRegistration(Base):
 
     def __repr__(self):
         return f'<Регистрация {self.id}>'
-
-
-Base.metadata.create_all(bind=engine)

@@ -1,8 +1,8 @@
 from fastapi import FastAPI, APIRouter
 
-from .api.city import city_router
-from .api.picnic import picnic_router
-from .api.user import user_router
+from .routers.city import city_router
+from .routers.picnic import picnic_router
+from .routers.user import user_router
 
 app = FastAPI(title='Test task from Unlim Soft')
 
